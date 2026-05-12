@@ -13,7 +13,7 @@ indice = pd.read_excel("Autores Completo.xlsx")
 # CAMBIA ESTOS NOMBRES
 # POR LOS DE TU EXCEL
 
-COLUMNA_NOMBRE = "Columna1"
+COLUMNA_NOMBRE = "author_name"
 COLUMNA_KEYWORDS = "Columna2"
 COLUMNA_CORREO = "Columna3"
 
@@ -100,22 +100,9 @@ def calculate_match_score(author_keywords_string, user_keywords):
 
             matched = False
 
-            # Coincidencia exacta
-            if user_kw == author_kw:
+            # Coincidencia exacta únicamente
+            if user_kw.strip() == author_kw.strip():
                 matched = True
-
-            else:
-
-                user_phrase = user_kw.strip()
-                author_phrase = author_kw.strip()
-
-                # Coincidencia SOLO si el autor
-                # tiene una keyword MÁS amplia
-                if (
-                    len(user_phrase) < len(author_phrase)
-                    and author_phrase.startswith(user_phrase)
-                ):
-                    matched = True
 
             if matched:
 
@@ -338,20 +325,17 @@ HTML = """
         }
 
         #loading{
-            position:fixed;
-            top:20px;
-            right:20px;
-            z-index:9999;
             display:none;
+            margin-top:18px;
         }
-
+        
         .loading-box{
-            background:#111827;
+            background:#1e293b;
             color:white;
-            padding:16px 22px;
-            border-radius:14px;
+            padding:14px;
+            border-radius:12px;
             font-size:16px;
-            box-shadow:0 8px 24px rgba(0,0,0,0.35);
+            text-align:center;
             border:1px solid #334155;
             animation:pulse 1s infinite;
         }
