@@ -140,8 +140,6 @@ def calculate_match_score(author_keywords_string, user_keywords):
 
 HTML = """
 
-HTML = """
-
 <!DOCTYPE html>
 <html lang="es">
 
@@ -371,8 +369,6 @@ HTML = """
 </body>
 
 </html>
-
-"""
 
 """
 
