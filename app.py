@@ -1,23 +1,4 @@
 from flask import Flask, render_template, request
-
-    return normalized_kw
-
-
-# Función para calcular la puntuación de coincidencia
-def calculate_match_score(author_keywords_string, user_keywords_list):
-
-    if pd.isna(author_keywords_string):
-        return 0
-
-    # Procesar palabras clave del autor
-    author_keywords = [
-        normalize_keyword_with_synonyms(kw, synonym_map)
-        for kw in str(author_keywords_string).split(';')
-        if kw.strip()
-    ]
-
-    total_match_count = 0
-
     # Comparar cada palabra del usuario
     for user_kw in user_keywords_list:
 
