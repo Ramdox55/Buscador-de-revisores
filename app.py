@@ -73,7 +73,7 @@ def calculate_match_score(author_keywords_string, user_keywords):
     if pd.isna(author_keywords_string):
         return 0, [], []
 
-    # Keywords originales del autor
+    # Keywords originales
     original_keywords = [
         k.strip()
         for k in str(author_keywords_string).split(";")
@@ -86,11 +86,11 @@ def calculate_match_score(author_keywords_string, user_keywords):
         for k in original_keywords
     ]
 
-    matched_keywords = []
+    matched_keywords_count = {}
 
     total_matches = 0
 
-    # Buscar coincidencias
+    # Comparar keywords
     for user_kw in user_keywords:
 
         for i, author_kw in enumerate(normalized_author_keywords):
@@ -114,13 +114,22 @@ def calculate_match_score(author_keywords_string, user_keywords):
 
                 original_word = original_keywords[i]
 
-                if original_word not in matched_keywords:
-                    matched_keywords.append(original_word)
+                # Contar coincidencias
+                if original_word not in matched_keywords_count:
+                    matched_keywords_count[original_word] = 1
+                else:
+                    matched_keywords_count[original_word] += 1
 
-    # Resto de keywords SIN coincidencias
+    # Convertir a lista bonita
+    matched_keywords = [
+        f"{kw} ({count})"
+        for kw, count in matched_keywords_count.items()
+    ]
+
+    # Resto de palabras
     remaining_keywords = sorted([
         kw for kw in original_keywords
-        if kw not in matched_keywords
+        if kw not in matched_keywords_count
     ])
 
     return total_matches, matched_keywords, remaining_keywords
