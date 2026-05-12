@@ -25,9 +25,14 @@
 
         {% for autor in resultados %}
 
-            <div style="margin-bottom:20px;">
+            <div style="margin-bottom:25px; border-bottom:1px solid #ccc; padding-bottom:15px;">
 
                 <h3>{{ autor['Columna1'] }}</h3>
+
+                <p>
+                    <strong>Correo:</strong>
+                    {{ autor['Columna3'] }}
+                </p>
 
                 <p>
                     <strong>Palabras clave:</strong>
@@ -35,7 +40,7 @@
                 </p>
 
                 <p>
-                    <strong>Puntuación:</strong>
+                    <strong>Coincidencias:</strong>
                     {{ autor['match_score'] }}
                 </p>
 
