@@ -204,10 +204,19 @@ HTML = """
                     {{ autor['matched_keywords'] | join(', ') }}
                 </p>
         
-                <p>
-                    <strong>Resto de palabras clave:</strong>
-                    {{ autor['remaining_keywords'] | join(', ') }}
-                </p>
+                <details>
+        
+                    <summary>
+                        Ver resto de palabras clave
+                    </summary>
+        
+                    <p style="margin-top:10px;">
+        
+                        {{ autor['remaining_keywords'] | join(', ') }}
+        
+                    </p>
+        
+                </details>
         
             </div>
         
