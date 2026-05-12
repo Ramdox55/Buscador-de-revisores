@@ -4,24 +4,22 @@ import unicodedata
 
 app = Flask(__name__)
 
-# =========================
+# =====================================
 # CARGAR EXCEL
-# =========================
+# =====================================
 
 indice = pd.read_excel("Autores Completo.xlsx")
 
-# IMPORTANTE:
-# Ajusta estos nombres EXACTAMENTE
-# como aparecen en tu Excel.
+# CAMBIA ESTOS NOMBRES
+# POR LOS DE TU EXCEL
 
-COLUMNA_NOMBRE = "author_name"
+COLUMNA_NOMBRE = "Columna1"
 COLUMNA_KEYWORDS = "Columna2"
 COLUMNA_CORREO = "Columna3"
 
-
-# =========================
+# =====================================
 # FUNCIONES
-# =========================
+# =====================================
 
 def remove_accents(input_str):
 
@@ -44,7 +42,8 @@ def remove_accents(input_str):
     return final
 
 
-# Diccionario de sinónimos
+# SINÓNIMOS
+
 synonym_map = {
     "marketing": ["mercadotecnia"],
     "educacion": ["enseñanza", "formacion"],
@@ -67,6 +66,10 @@ def normalize_keyword(keyword):
 
     return keyword
 
+
+# =====================================
+# CALCULAR COINCIDENCIAS
+# =====================================
 
 def calculate_match_score(author_keywords_string, user_keywords):
 
@@ -100,14 +103,14 @@ def calculate_match_score(author_keywords_string, user_keywords):
             # Coincidencia exacta
             if user_kw == author_kw:
                 matched = True
-            
+
             else:
-            
+
                 user_phrase = user_kw.strip()
                 author_phrase = author_kw.strip()
-            
-                # Coincidencia solo si la búsqueda es una subfrase válida
-                # y comienza correctamente por palabras
+
+                # Coincidencia SOLO si el autor
+                # tiene una keyword MÁS amplia
                 if (
                     len(user_phrase) < len(author_phrase)
                     and author_phrase.startswith(user_phrase)
@@ -126,13 +129,13 @@ def calculate_match_score(author_keywords_string, user_keywords):
                 else:
                     matched_keywords_count[original_word] += 1
 
-    # Convertir a lista bonita
+    # Lista bonita
     matched_keywords = [
         f"{kw} ({count})"
         for kw, count in matched_keywords_count.items()
     ]
 
-    # Resto de palabras
+    # Resto de keywords
     remaining_keywords = sorted([
         kw for kw in original_keywords
         if kw not in matched_keywords_count
@@ -140,9 +143,10 @@ def calculate_match_score(author_keywords_string, user_keywords):
 
     return total_matches, matched_keywords, remaining_keywords
 
-# =========================
+
+# =====================================
 # HTML
-# =========================
+# =====================================
 
 HTML = """
 
@@ -160,11 +164,11 @@ HTML = """
     <style>
 
         body{
-            font-family: Arial, sans-serif;
-            background-color:#f4f6f9;
+            font-family:'Segoe UI',sans-serif;
+            background:linear-gradient(135deg,#0f172a,#1e293b);
             margin:0;
             padding:40px;
-            color:#333;
+            color:#e2e8f0;
         }
 
         .container{
@@ -175,138 +179,197 @@ HTML = """
         h1{
             text-align:center;
             margin-bottom:40px;
-            color:#1f2937;
+            color:white;
+            font-size:42px;
         }
 
         .search-box{
-            background:white;
+            background:#111827;
             padding:25px;
-            border-radius:12px;
-            box-shadow:0px 4px 12px rgba(0,0,0,0.08);
-            margin-bottom:30px;
+            border-radius:18px;
+            box-shadow:0 8px 24px rgba(0,0,0,0.35);
+            margin-bottom:35px;
+            border:1px solid #334155;
         }
 
         form{
             display:flex;
-            gap:10px;
+            gap:12px;
         }
 
         input{
             flex:1;
-            padding:14px;
-            border:1px solid #ccc;
-            border-radius:8px;
+            padding:16px;
+            border:none;
+            border-radius:12px;
+            background:#1e293b;
+            color:white;
             font-size:16px;
+            outline:none;
+        }
+
+        input::placeholder{
+            color:#94a3b8;
         }
 
         button{
-            padding:14px 24px;
-            background:#2563eb;
+            padding:16px 26px;
+            background:linear-gradient(135deg,#06b6d4,#3b82f6);
             color:white;
             border:none;
-            border-radius:8px;
+            border-radius:12px;
             cursor:pointer;
             font-size:16px;
             font-weight:bold;
+            transition:0.2s;
         }
 
         button:hover{
-            background:#1d4ed8;
+            transform:translateY(-2px);
+            opacity:0.95;
         }
 
         .resultado{
-            background:white;
-            border-radius:12px;
-            padding:24px;
-            margin-bottom:20px;
-            box-shadow:0px 4px 10px rgba(0,0,0,0.06);
+            background:#111827;
+            border-radius:18px;
+            padding:28px;
+            margin-bottom:22px;
+            box-shadow:0 8px 24px rgba(0,0,0,0.25);
+            border:1px solid #334155;
         }
 
         .autor{
-            font-size:24px;
+            font-size:28px;
+            font-weight:700;
+            margin-bottom:12px;
+            color:white;
+        }
+
+        .ranking{
+            display:flex;
+            align-items:center;
+            gap:10px;
+            margin-bottom:18px;
+        }
+
+        .ranking-number{
+            background:linear-gradient(135deg,#f59e0b,#f97316);
+            color:white;
+            width:42px;
+            height:42px;
+            border-radius:50%;
+            display:flex;
+            align-items:center;
+            justify-content:center;
             font-weight:bold;
-            margin-bottom:10px;
-            color:#111827;
+            font-size:18px;
+            box-shadow:0 4px 12px rgba(249,115,22,0.4);
+        }
+
+        .ranking-text{
+            color:#cbd5e1;
+            font-size:15px;
+            font-weight:600;
+            letter-spacing:0.5px;
         }
 
         .badge{
             display:inline-block;
-            background:#dbeafe;
-            color:#1d4ed8;
-            padding:6px 12px;
-            border-radius:20px;
+            background:linear-gradient(135deg,#22c55e,#16a34a);
+            color:white;
+            padding:8px 14px;
+            border-radius:999px;
             font-size:14px;
-            margin-bottom:15px;
+            margin-bottom:20px;
             font-weight:bold;
         }
 
         .section-title{
             font-weight:bold;
-            margin-top:15px;
-            margin-bottom:8px;
-            color:#374151;
+            margin-top:18px;
+            margin-bottom:10px;
+            color:#cbd5e1;
+            font-size:15px;
+            text-transform:uppercase;
+            letter-spacing:1px;
         }
 
         .keywords{
-            line-height:1.8;
+            line-height:2;
         }
 
         .matched{
-            background:#dcfce7;
-            color:#166534;
-            padding:6px 10px;
-            border-radius:16px;
+            background:linear-gradient(135deg,#06b6d4,#3b82f6);
+            color:white;
+            padding:8px 12px;
+            border-radius:999px;
             display:inline-block;
-            margin:4px;
+            margin:5px;
             font-size:14px;
-        }
-
-        .other-keywords{
-            color:#555;
-            margin-top:10px;
+            font-weight:500;
+            box-shadow:0 4px 10px rgba(59,130,246,0.3);
         }
 
         details{
-            margin-top:15px;
+            margin-top:18px;
+            background:#1e293b;
+            border-radius:12px;
+            padding:14px;
         }
 
         summary{
             cursor:pointer;
-            color:#2563eb;
+            color:#38bdf8;
             font-weight:bold;
+            outline:none;
+        }
+
+        .other-keywords{
+            margin-top:14px;
+            color:#cbd5e1;
+            line-height:1.8;
         }
 
         .empty{
             text-align:center;
-            margin-top:40px;
-            color:#666;
+            margin-top:50px;
+            color:#94a3b8;
+            font-size:18px;
+        }
+
+        #loading{
+            position:fixed;
+            top:20px;
+            right:20px;
+            z-index:9999;
+            display:none;
         }
 
         .loading-box{
-            background:#1e293b;
+            background:#111827;
             color:white;
-            padding:18px;
-            border-radius:12px;
-            margin-top:20px;
-            text-align:center;
-            font-size:18px;
+            padding:16px 22px;
+            border-radius:14px;
+            font-size:16px;
+            box-shadow:0 8px 24px rgba(0,0,0,0.35);
+            border:1px solid #334155;
             animation:pulse 1s infinite;
         }
-        
+
         @keyframes pulse{
-        
+
             0%{
                 opacity:0.5;
             }
-        
+
             50%{
                 opacity:1;
             }
-        
+
             100%{
                 opacity:0.5;
             }
-        
+
         }
 
     </style>
@@ -325,18 +388,10 @@ HTML = """
 
             <form method="POST" onsubmit="mostrarCarga()">
 
-                <div id="loading" style="display:none; margin-top:20px;">
-                
-                    <div class="loading-box">
-                        Buscando coincidencias...
-                    </div>
-                
-                </div>
-                
                 <input
                     type="text"
                     name="keywords"
-                    placeholder="Coloca las palabras clave separadas por coma Ej: liderazgo, innovación, IA"
+                    placeholder="Coloca las palabras clave separadas por coma. Ej: liderazgo, innovación, IA"
                 >
 
                 <button type="submit">
@@ -347,24 +402,48 @@ HTML = """
 
         </div>
 
-        {% if resultados and resultados|length > 0 %}
+        <div id="loading">
+
+            <div class="loading-box">
+                Buscando coincidencias...
+            </div>
+
+        </div>
+
+        {% if resultados is not none and resultados|length > 0 %}
 
             {% for autor in resultados %}
 
                 {% set rank = loop.index %}
 
                 <div class="resultado">
-                
-                    <div class="badge">
-                        #{{ rank }} Mejor coincidencia
+
+                    <div class="ranking">
+
+                        <span class="ranking-number">
+                            #{{ rank }}
+                        </span>
+
+                        <span class="ranking-text">
+                            Coincidencia destacada
+                        </span>
+
                     </div>
-                    
+
                     <div class="autor">
                         {{ autor[COLUMNA_NOMBRE] }}
                     </div>
 
                     <div class="badge">
                         {{ autor['match_score'] }} coincidencias
+                    </div>
+
+                    <div class="section-title">
+                        Correo
+                    </div>
+
+                    <div>
+                        {{ autor[COLUMNA_CORREO] }}
                     </div>
 
                     <div class="section-title">
@@ -401,7 +480,7 @@ HTML = """
 
             {% endfor %}
 
-        {% else %}
+        {% elif resultados is not none %}
 
             <div class="empty">
 
@@ -412,45 +491,44 @@ HTML = """
         {% endif %}
 
     </div>
-    
+
     <script>
-    
-    function mostrarCarga(){
-    
-        document.getElementById("loading").style.display = "block";
-    
-    }
-    
+
+        function mostrarCarga(){
+
+            document.getElementById("loading").style.display = "block";
+
+        }
+
     </script>
-    
+
 </body>
 
 </html>
 
 """
 
-
-# =========================
+# =====================================
 # RUTA PRINCIPAL
-# =========================
+# =====================================
 
 @app.route("/", methods=["GET", "POST"])
 def home():
 
-    resultados = []
+    resultados = None
 
     if request.method == "POST":
 
         texto_busqueda = request.form["keywords"]
 
-        # Separar keywords del usuario
+        # Procesar keywords del usuario
         user_keywords = [
             normalize_keyword(k)
             for k in texto_busqueda.split(",")
             if k.strip()
         ]
 
-        # Calcular puntuación
+        # Calcular resultados
         indice[[
             "match_score",
             "matched_keywords",
@@ -461,7 +539,7 @@ def home():
             )
         )
 
-        # Filtrar resultados útiles
+        # Filtrar
         resultados_df = indice[
             indice["match_score"] > 0
         ]
@@ -472,7 +550,6 @@ def home():
             ascending=False
         )
 
-        # Convertir a lista
         resultados = resultados_df.to_dict(
             orient="records"
         )
@@ -485,10 +562,9 @@ def home():
         COLUMNA_CORREO=COLUMNA_CORREO
     )
 
-
-# =========================
+# =====================================
 # EJECUTAR
-# =========================
+# =====================================
 
 if __name__ == "__main__":
     app.run(debug=True)
