@@ -71,35 +71,59 @@ def normalize_keyword(keyword):
 def calculate_match_score(author_keywords_string, user_keywords):
 
     if pd.isna(author_keywords_string):
-        return 0
+        return 0, [], []
 
-    # Separar keywords del autor
-    author_keywords = [
-        normalize_keyword(k)
+    # Keywords originales del autor
+    original_keywords = [
+        k.strip()
         for k in str(author_keywords_string).split(";")
         if k.strip()
     ]
 
+    # Keywords normalizadas
+    normalized_author_keywords = [
+        normalize_keyword(k)
+        for k in original_keywords
+    ]
+
+    matched_keywords = []
+
     total_matches = 0
 
-    # Comparar TODAS las palabras
+    # Buscar coincidencias
     for user_kw in user_keywords:
 
-        for author_kw in author_keywords:
+        for i, author_kw in enumerate(normalized_author_keywords):
+
+            matched = False
 
             # Coincidencia exacta
             if user_kw == author_kw:
-                total_matches += 1
+                matched = True
 
             # Coincidencia parcial
             elif user_kw in author_kw:
-                total_matches += 1
+                matched = True
 
             elif author_kw in user_kw:
+                matched = True
+
+            if matched:
+
                 total_matches += 1
 
-    return total_matches
+                original_word = original_keywords[i]
 
+                if original_word not in matched_keywords:
+                    matched_keywords.append(original_word)
+
+    # Resto de keywords SIN coincidencias
+    remaining_keywords = sorted([
+        kw for kw in original_keywords
+        if kw not in matched_keywords
+    ])
+
+    return total_matches, matched_keywords, remaining_keywords
 
 # =========================
 # HTML
@@ -218,8 +242,14 @@ def home():
         ]
 
         # Calcular puntuación
-        indice["match_score"] = indice[COLUMNA_KEYWORDS].apply(
-            lambda x: calculate_match_score(x, user_keywords)
+        indice[[
+            "match_score",
+            "matched_keywords",
+            "remaining_keywords"
+        ]] = indice[COLUMNA_KEYWORDS].apply(
+            lambda x: pd.Series(
+                calculate_match_score(x, user_keywords)
+            )
         )
 
         # Filtrar resultados útiles
