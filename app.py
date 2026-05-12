@@ -1,9 +1,5 @@
 from flask import Flask, render_template, request
 
-    for preferred_term, synonyms in synonym_dict.items():
-        if normalized_kw == preferred_term or normalized_kw in synonyms:
-            return preferred_term
-
     return normalized_kw
 
 
@@ -22,12 +18,18 @@ def calculate_match_score(author_keywords_string, user_keywords_list):
 
     total_match_count = 0
 
+    # Comparar cada palabra del usuario
     for user_kw in user_keywords_list:
-        # Buscar coincidencias parciales
-        total_match_count += sum(
-            1 for ak in author_keywords
-            if user_kw in ak
-        )
+
+        for author_kw in author_keywords:
+
+            # Coincidencia exacta
+            if user_kw == author_kw:
+                total_match_count += 1
+
+            # Coincidencia parcial
+            elif user_kw in author_kw or author_kw in user_kw:
+                total_match_count += 1
 
     return total_match_count
 
