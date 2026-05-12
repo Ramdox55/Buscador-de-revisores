@@ -14,7 +14,7 @@ indice = pd.read_excel("Autores Completo.xlsx")
 # Ajusta estos nombres EXACTAMENTE
 # como aparecen en tu Excel.
 
-COLUMNA_NOMBRE = "Columna1"
+COLUMNA_NOMBRE = "author_name"
 COLUMNA_KEYWORDS = "Columna2"
 COLUMNA_CORREO = "Columna3"
 
