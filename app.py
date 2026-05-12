@@ -187,30 +187,30 @@ HTML = """
         <h2>Resultados</h2>
 
         {% for autor in resultados %}
-
+        
             <div class="resultado">
-
-                <h3>
+        
+                <h2>
                     {{ autor[COLUMNA_NOMBRE] }}
-                </h3>
-
+                </h2>
+        
                 <p>
-                    <strong>Correo:</strong>
-                    {{ autor[COLUMNA_CORREO] }}
-                </p>
-
-                <p>
-                    <strong>Palabras clave:</strong>
-                    {{ autor[COLUMNA_KEYWORDS] }}
-                </p>
-
-                <p>
-                    <strong>Coincidencias:</strong>
+                    <strong>Número de coincidencias:</strong>
                     {{ autor['match_score'] }}
                 </p>
-
+        
+                <p>
+                    <strong>Palabras coincidentes:</strong>
+                    {{ autor['matched_keywords'] | join(', ') }}
+                </p>
+        
+                <p>
+                    <strong>Resto de palabras clave:</strong>
+                    {{ autor['remaining_keywords'] | join(', ') }}
+                </p>
+        
             </div>
-
+        
         {% endfor %}
 
     {% endif %}
