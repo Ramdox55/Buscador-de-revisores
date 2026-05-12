@@ -149,7 +149,7 @@ HTML = """
         <input
             type="text"
             name="keywords"
-            placeholder="Coloca las palabras clave separadas por com. Ej: liderazgo, innovación, IA"
+            placeholder="Coloca las palabras clave separadas por coma. Ej: liderazgo, innovación, IA"
         >
 
         <button type="submit">
