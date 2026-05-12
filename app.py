@@ -100,13 +100,19 @@ def calculate_match_score(author_keywords_string, user_keywords):
             # Coincidencia exacta
             if user_kw == author_kw:
                 matched = True
-
-            # Coincidencia parcial
-            elif user_kw in author_kw:
-                matched = True
-
-            elif author_kw in user_kw:
-                matched = True
+            
+            else:
+            
+                user_phrase = user_kw.strip()
+                author_phrase = author_kw.strip()
+            
+                # Coincidencia solo si la búsqueda es una subfrase válida
+                # y comienza correctamente por palabras
+                if (
+                    len(user_phrase) < len(author_phrase)
+                    and author_phrase.startswith(user_phrase)
+                ):
+                    matched = True
 
             if matched:
 
