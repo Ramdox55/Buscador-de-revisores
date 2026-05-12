@@ -140,33 +140,142 @@ def calculate_match_score(author_keywords_string, user_keywords):
 
 HTML = """
 
+HTML = """
+
 <!DOCTYPE html>
 <html lang="es">
 
 <head>
+
     <meta charset="UTF-8">
-    <title>Buscador de Revisores</title>
+
+    <title>
+        Buscador de Revisores
+    </title>
 
     <style>
 
         body{
-            font-family: Arial;
-            margin:40px;
+            font-family: Arial, sans-serif;
+            background-color:#f4f6f9;
+            margin:0;
+            padding:40px;
+            color:#333;
+        }
+
+        .container{
+            max-width:1000px;
+            margin:auto;
+        }
+
+        h1{
+            text-align:center;
+            margin-bottom:40px;
+            color:#1f2937;
+        }
+
+        .search-box{
+            background:white;
+            padding:25px;
+            border-radius:12px;
+            box-shadow:0px 4px 12px rgba(0,0,0,0.08);
+            margin-bottom:30px;
+        }
+
+        form{
+            display:flex;
+            gap:10px;
         }
 
         input{
-            width:500px;
-            padding:10px;
+            flex:1;
+            padding:14px;
+            border:1px solid #ccc;
+            border-radius:8px;
+            font-size:16px;
         }
 
         button{
-            padding:10px;
+            padding:14px 24px;
+            background:#2563eb;
+            color:white;
+            border:none;
+            border-radius:8px;
+            cursor:pointer;
+            font-size:16px;
+            font-weight:bold;
+        }
+
+        button:hover{
+            background:#1d4ed8;
         }
 
         .resultado{
-            border:1px solid #ccc;
-            padding:15px;
-            margin-top:20px;
+            background:white;
+            border-radius:12px;
+            padding:24px;
+            margin-bottom:20px;
+            box-shadow:0px 4px 10px rgba(0,0,0,0.06);
+        }
+
+        .autor{
+            font-size:24px;
+            font-weight:bold;
+            margin-bottom:10px;
+            color:#111827;
+        }
+
+        .badge{
+            display:inline-block;
+            background:#dbeafe;
+            color:#1d4ed8;
+            padding:6px 12px;
+            border-radius:20px;
+            font-size:14px;
+            margin-bottom:15px;
+            font-weight:bold;
+        }
+
+        .section-title{
+            font-weight:bold;
+            margin-top:15px;
+            margin-bottom:8px;
+            color:#374151;
+        }
+
+        .keywords{
+            line-height:1.8;
+        }
+
+        .matched{
+            background:#dcfce7;
+            color:#166534;
+            padding:6px 10px;
+            border-radius:16px;
+            display:inline-block;
+            margin:4px;
+            font-size:14px;
+        }
+
+        .other-keywords{
+            color:#555;
+            margin-top:10px;
+        }
+
+        details{
+            margin-top:15px;
+        }
+
+        summary{
+            cursor:pointer;
+            color:#2563eb;
+            font-weight:bold;
+        }
+
+        .empty{
+            text-align:center;
+            margin-top:40px;
+            color:#666;
         }
 
     </style>
@@ -175,66 +284,95 @@ HTML = """
 
 <body>
 
-    <h1>Buscador de Revisores</h1>
+    <div class="container">
 
-    <form method="POST">
+        <h1>
+            Buscador de Revisores
+        </h1>
 
-        <input
-            type="text"
-            name="keywords"
-            placeholder="Coloca las palabras clave separadas por coma. Ej: liderazgo, innovación, IA"
-        >
+        <div class="search-box">
 
-        <button type="submit">
-            Buscar
-        </button>
+            <form method="POST">
 
-    </form>
+                <input
+                    type="text"
+                    name="keywords"
+                    placeholder="Ej: liderazgo, innovación, IA"
+                >
 
-    {% if resultados %}
+                <button type="submit">
+                    Buscar
+                </button>
 
-        <h2>Resultados</h2>
+            </form>
 
-        {% for autor in resultados %}
-        
-            <div class="resultado">
-        
-                <h2>
-                    {{ autor[COLUMNA_NOMBRE] }}
-                </h2>
-        
-                <p>
-                    <strong>Número de coincidencias:</strong>
-                    {{ autor['match_score'] }}
-                </p>
-        
-                <p>
-                    <strong>Palabras coincidentes:</strong>
-                    {{ autor['matched_keywords'] | join(', ') }}
-                </p>
-        
-                <details>
-        
-                    <summary>
-                        Ver resto de palabras clave
-                    </summary>
-        
-                    <p style="margin-top:10px;">
-        
-                        {{ autor['remaining_keywords'] | join(', ') }}
-        
-                    </p>
-        
-                </details>
-        
+        </div>
+
+        {% if resultados %}
+
+            {% for autor in resultados %}
+
+                <div class="resultado">
+
+                    <div class="autor">
+                        {{ autor[COLUMNA_NOMBRE] }}
+                    </div>
+
+                    <div class="badge">
+                        {{ autor['match_score'] }} coincidencias
+                    </div>
+
+                    <div class="section-title">
+                        Palabras coincidentes
+                    </div>
+
+                    <div class="keywords">
+
+                        {% for kw in autor['matched_keywords'] %}
+
+                            <span class="matched">
+                                {{ kw }}
+                            </span>
+
+                        {% endfor %}
+
+                    </div>
+
+                    <details>
+
+                        <summary>
+                            Ver resto de palabras clave
+                        </summary>
+
+                        <div class="other-keywords">
+
+                            {{ autor['remaining_keywords'] | join(', ') }}
+
+                        </div>
+
+                    </details>
+
+                </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div class="empty">
+
+                Realiza una búsqueda para ver resultados.
+
             </div>
-        
-        {% endfor %}
 
-    {% endif %}
+        {% endif %}
+
+    </div>
 
 </body>
+
 </html>
+
+"""
 
 """
 
