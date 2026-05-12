@@ -75,7 +75,7 @@ def home():
             if kw.strip()
         ]
 
-        indice["score"] = indice["Palabras clave"].apply(
+        indice["score"] = indice["Columna2"].apply(
             lambda x: calculate_match_score(x, user_keywords)
         )
 
