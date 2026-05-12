@@ -282,6 +282,33 @@ HTML = """
             color:#666;
         }
 
+        .loading-box{
+            background:#1e293b;
+            color:white;
+            padding:18px;
+            border-radius:12px;
+            margin-top:20px;
+            text-align:center;
+            font-size:18px;
+            animation:pulse 1s infinite;
+        }
+        
+        @keyframes pulse{
+        
+            0%{
+                opacity:0.5;
+            }
+        
+            50%{
+                opacity:1;
+            }
+        
+            100%{
+                opacity:0.5;
+            }
+        
+        }
+
     </style>
 
 </head>
@@ -296,12 +323,20 @@ HTML = """
 
         <div class="search-box">
 
-            <form method="POST">
+            <form method="POST" onsubmit="mostrarCarga()">
 
+                <div id="loading" style="display:none; margin-top:20px;">
+                
+                    <div class="loading-box">
+                        Buscando coincidencias...
+                    </div>
+                
+                </div>
+                
                 <input
                     type="text"
                     name="keywords"
-                    placeholder="Ej: liderazgo, innovación, IA"
+                    placeholder="Coloca las palabras clave separadas por coma Ej: liderazgo, innovación, IA"
                 >
 
                 <button type="submit">
@@ -312,12 +347,18 @@ HTML = """
 
         </div>
 
-        {% if resultados %}
+        {% if resultados and resultados|length > 0 %}
 
             {% for autor in resultados %}
 
-                <div class="resultado">
+                {% set rank = loop.index %}
 
+                <div class="resultado">
+                
+                    <div class="badge">
+                        #{{ rank }} Mejor coincidencia
+                    </div>
+                    
                     <div class="autor">
                         {{ autor[COLUMNA_NOMBRE] }}
                     </div>
@@ -364,14 +405,24 @@ HTML = """
 
             <div class="empty">
 
-                Realiza una búsqueda para ver resultados.
+                No se encontraron coincidencias para esa búsqueda.
 
             </div>
 
         {% endif %}
 
     </div>
-
+    
+    <script>
+    
+    function mostrarCarga(){
+    
+        document.getElementById("loading").style.display = "block";
+    
+    }
+    
+    </script>
+    
 </body>
 
 </html>
